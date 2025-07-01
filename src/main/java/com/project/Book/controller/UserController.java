@@ -1,0 +1,87 @@
+package com.project.Book.controller;
+
+import com.project.Book.config.Translator;
+import com.project.Book.dto.request.SearchUserRequest;
+import com.project.Book.dto.request.UserCreateRequest;
+import com.project.Book.dto.request.UserUpdateRequest;
+import com.project.Book.dto.response.ApiResponse;
+import com.project.Book.dto.response.PageResponse;
+import com.project.Book.dto.response.UserResponse;
+import com.project.Book.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequestMapping("/user")
+@Slf4j
+public class UserController {
+    UserService userService;
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse<UserResponse>> createUser(@RequestBody @Valid UserCreateRequest userCreateRequest){
+        ApiResponse<UserResponse> apiResponse = ApiResponse.<UserResponse>builder()
+                .code("user.create.success")
+                .message(Translator.toLocale("user.create.success"))
+                .data(userService.createUser(userCreateRequest)).build();
+        return ResponseEntity.ok(apiResponse);
+    }
+    @PutMapping("/update/{userId}")
+    @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
+    public ResponseEntity<ApiResponse<UserResponse>> updateUser(@PathVariable("userId") int userId,
+                                                                @RequestBody @Valid UserUpdateRequest userUpdateRequest,
+                                                                HttpServletRequest httpServletRequest){
+        ApiResponse<UserResponse> apiResponse = ApiResponse.<UserResponse>builder()
+                .code("user.update.success")
+                .message(Translator.toLocale("user.update.success"))
+                .data(userService.updateUser(userId, userUpdateRequest)).build();
+        return ResponseEntity.ok(apiResponse);
+    }
+    @GetMapping("/detail/{userId}")
+    @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
+    public ResponseEntity<ApiResponse<UserResponse>> getUser(@PathVariable("userId") int userId, HttpServletRequest httpServletRequest){
+        ApiResponse<UserResponse> apiResponse = ApiResponse.<UserResponse>builder()
+                .code("user.get.success")
+                .message(Translator.toLocale("user.get.success"))
+                .data(userService.getUser(userId)).build();
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @DeleteMapping("/delete/{userId}")
+    @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
+    public ResponseEntity<ApiResponse> deleteUser(@PathVariable("userId") int userId,HttpServletRequest httpServletRequest){
+        userService.deleteUser(userId);
+        ApiResponse apiResponse = ApiResponse.builder()
+                .code("user.delete.success")
+                .message(Translator.toLocale("user.delete.success")).build();
+        return ResponseEntity.ok(apiResponse);
+    }
+    @GetMapping
+    @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
+    public ResponseEntity<ApiResponse<PageResponse<UserResponse>>> getUsers(@RequestParam(defaultValue = "0", required = false) int pageNo,
+                                                                            @RequestParam(defaultValue = "20", required = false) int pageSize,
+                                                                            @RequestBody(required = false) SearchUserRequest searchUserRequest,
+                                                                            @RequestParam(required = false, name = "sorts", defaultValue = "userId:asc")List<String> sorts,
+                                                                            HttpServletRequest httpServletRequest){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info(authentication.getAuthorities().toString());
+        log.info(httpServletRequest.getRequestURI().replaceAll("^/|/$", "").replaceAll("/", "."));
+        ApiResponse<PageResponse<UserResponse>> apiResponse = ApiResponse.<PageResponse<UserResponse>>builder()
+                .code("user.getlist.success")
+                .message(Translator.toLocale("user.getlist.success"))
+                .data(userService.getUsers(pageNo,pageSize,searchUserRequest,sorts))
+                .build();
+        return ResponseEntity.ok(apiResponse);
+    }
+}

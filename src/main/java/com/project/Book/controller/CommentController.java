@@ -1,0 +1,86 @@
+package com.project.Book.controller;
+
+import com.project.Book.config.Translator;
+import com.project.Book.dto.request.CommentRequest;
+import com.project.Book.dto.request.CommentUpdateRequest;
+import com.project.Book.dto.request.SearchCommentRequest;
+import com.project.Book.dto.response.ApiResponse;
+import com.project.Book.dto.response.CommentResponse;
+import com.project.Book.dto.response.PageResponse;
+import com.project.Book.service.CommentService;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/comment")
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class CommentController {
+    CommentService commentService;
+
+    @PostMapping("/create")
+    @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
+    public ResponseEntity<ApiResponse<CommentResponse>> createComment(@RequestBody CommentRequest commentRequest,
+                                                                      HttpServletRequest httpServletRequest) {
+        ApiResponse<CommentResponse> apiResponse = ApiResponse.<CommentResponse>builder()
+                .code("comment.create.success")
+                .message(Translator.toLocale("comment.create.success"))
+                .data(commentService.createComment(commentRequest)).build();
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @PutMapping("/update/{commentId}")
+    @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
+    public ResponseEntity<ApiResponse<CommentResponse>> updateComment(@PathVariable("commentId")int commentId,
+                                                                      @RequestBody CommentUpdateRequest commentUpdateRequest,
+                                                                      HttpServletRequest httpServletRequest) {
+        ApiResponse<CommentResponse> apiResponse = ApiResponse.<CommentResponse>builder()
+                .code("comment.update.success")
+                .message(Translator.toLocale("comment.update.success"))
+                .data(commentService.updateComment(commentId, commentUpdateRequest)).build();
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @DeleteMapping("/delete/{commentId}")
+    @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
+    public ResponseEntity<ApiResponse> deleteComment(@PathVariable("commentId")int commentId,
+                                                     HttpServletRequest httpServletRequest) {
+        commentService.deleteComment(commentId);
+        ApiResponse apiResponse = ApiResponse.builder()
+                .code("comment.delete.success")
+                .message(Translator.toLocale("comment.delete.success"))
+                .build();
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/detail/{commentId}")
+    public ResponseEntity<ApiResponse<CommentResponse>> getComment(@PathVariable("commentId")int commentId) {
+        ApiResponse<CommentResponse> apiResponse = ApiResponse.<CommentResponse>builder()
+                .code("comment.get.success")
+                .message(Translator.toLocale("comment.get.success"))
+                .data(commentService.getComment(commentId)).build();
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping
+    @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
+    public ResponseEntity<ApiResponse<PageResponse<CommentResponse>>> getComments(@RequestParam(name = "pageNo", defaultValue = "0", required = false)int pageNo,
+                                                                     @RequestParam(name = "pageSize", defaultValue = "2", required = false)int pageSize,
+                                                                     @RequestParam(name = "sorts", defaultValue = "commentId:asc", required = false)List<String> sorts,
+                                                                     @RequestBody(required = false) SearchCommentRequest searchCommentRequest,
+                                                                     HttpServletRequest httpServletRequest){
+        ApiResponse<PageResponse<CommentResponse>> apiResponse = ApiResponse.<PageResponse<CommentResponse>>builder()
+                .code("comment.get-list.success")
+                .message(Translator.toLocale("comment.get-list.success"))
+                .data(commentService.getComments(pageNo, pageSize, sorts, searchCommentRequest))
+                .build();
+        return ResponseEntity.ok(apiResponse);
+    }
+}

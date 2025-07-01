@@ -1,0 +1,20 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1/library
+spring:
+  application:
+    name: Book
+  datasource:
+    url: "jdbc:mysql://localhost:3306/book_library"
+    username: "root"
+    password: "AnHoangLe2003@"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+jwt:
+  signer-key: "auhhS1ma0NpTiuf5Ia+sOtiq4oTpW14W1FEV4NanRXwkPuKyaP4mxbQBjhEvWL2V"
+  valid-duration: 300 #second
+  refreshable-duration: 86400 #second
