@@ -2,6 +2,7 @@ package com.project.Book.controller;
 
 import com.project.Book.config.Translator;
 import com.project.Book.dto.request.BookRequest;
+import com.project.Book.dto.request.BookUpdateRequest;
 import com.project.Book.dto.request.SearchBookRequest;
 import com.project.Book.dto.response.*;
 import com.project.Book.service.BookService;
@@ -33,12 +34,12 @@ public class BookController {
     }
     @PutMapping("/update/{bookId}")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
-    public ResponseEntity<ApiResponse<BookResponse>> updateBook(@PathVariable("bookId") int bookId, @RequestBody BookRequest bookRequest,
+    public ResponseEntity<ApiResponse<BookResponse>> updateBook(@PathVariable("bookId") int bookId, @RequestBody BookUpdateRequest bookUpdateRequest,
                                                                 HttpServletRequest httpServletRequest) {
         ApiResponse<BookResponse> apiResponse = ApiResponse.<BookResponse>builder()
                 .code("book.update.success")
                 .message(Translator.toLocale("book.update.success"))
-                .data(bookService.updateBook(bookId, bookRequest)).build();
+                .data(bookService.updateBook(bookId, bookUpdateRequest)).build();
         return ResponseEntity.ok(apiResponse);
     }
     @DeleteMapping("/delete/{bookId}")

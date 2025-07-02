@@ -31,4 +31,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         and p.isDelete = false
     """)
     Page<Post> searchPost(Pageable pageable, SearchPostRequest request);
+
+    @Query(value = """
+        select exists(select 1 from post p join user u on p.user_id = u.user_id 
+            where p.post_id = :postId and u.user_id = :userId and p.is_delete = false and u.is_delete = false)
+    """, nativeQuery = true)
+    int userHasPost(@Param("postId") int postId, @Param("userId") int userId);
 }

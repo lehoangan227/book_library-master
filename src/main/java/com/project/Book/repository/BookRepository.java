@@ -36,7 +36,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     Page<Book> searchBooks(Pageable pageable, @Param("request") SearchBookRequest searchBookRequest);
 
     @Query(value = """
-        select exists(select 1 from book b where b.book_id = :bookId and b.quantity_available > 0 and is_delete = false)
+        select exists(select 1 from book b where b.book_id = :bookId and b.quantity_available > 0 and b.is_delete = false)
     """, nativeQuery = true)
     int checkQuantityAvailable(@Param("bookId")int bookId);
 

@@ -35,6 +35,8 @@ public class CheckPermission {
         if (isAdmin) {
             return true;
         }
+        boolean isPass = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals(requiredPermission));
         return authentication.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals(requiredPermission));
     }

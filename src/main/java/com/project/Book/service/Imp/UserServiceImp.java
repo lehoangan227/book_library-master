@@ -46,19 +46,19 @@ public class UserServiceImp implements UserService {
         }
         userCreateRequest.setPassword(UtilClass.hashPassword(userCreateRequest.getPassword()));
         User user = userRepository.save(userMapper.createDtoToEntity(userCreateRequest));
-        userRepository.insertDefaultRole(user.getUserId(), Role.GROUP_USER.getRoleCode());
+        userRepository.setDefaultRole(user.getUserId(), Role.GROUP_USER.getRoleCode());
         return userMapper.entityToResponseDTO(user);
     }
 
     @Override
     public UserResponse updateUser(int userId, UserUpdateRequest userUpdateRequest) {
-        User user = userRepository.findByUserIdAndIsDeleteFalse(userId).orElseThrow(()->new AppException("error.user.notfound", HttpStatus.NOT_FOUND));
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isUser = auth.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("GROUP_USER"));
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(Role.GROUP_USER.getRoleCode()));
         if(isUser&&(Integer.parseInt(UtilClass.getUserId())!=userId)){
             throw new AccessDeniedException("access denied");
         }
+        User user = userRepository.findByUserIdAndIsDeleteFalse(userId).orElseThrow(()->new AppException("error.user.notfound", HttpStatus.NOT_FOUND));
         if(userRepository.existsByEmailAndIsDeleteFalse(userUpdateRequest.getEmail())&&!userUpdateRequest.getEmail().equals(user.getEmail())){
             throw new AppException("error.email.used", HttpStatus.CONFLICT);
         }
@@ -68,13 +68,13 @@ public class UserServiceImp implements UserService {
 
     @Override
     public UserResponse getUser(int userId) {
-        User user  = userRepository.findByUserIdAndIsDeleteFalse(userId).orElseThrow(()->new AppException("error.user.notfound", HttpStatus.NOT_FOUND));
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isUser = auth.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("GROUP_USER"));
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(Role.GROUP_USER.getRoleCode()));
         if(isUser&&(Integer.parseInt(UtilClass.getUserId())!=userId)){
             throw new AccessDeniedException("access denied");
         }
+        User user  = userRepository.findByUserIdAndIsDeleteFalse(userId).orElseThrow(()->new AppException("error.user.notfound", HttpStatus.NOT_FOUND));
         return userMapper.entityToResponseDTO(user);
     }
 

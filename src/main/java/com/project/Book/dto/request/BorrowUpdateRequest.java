@@ -12,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BorrowUpdateRequest {
-    Integer userId;
     List<Integer> bookIds;
     LocalDate borrowDate;
     LocalDate returnDate;

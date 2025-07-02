@@ -27,14 +27,14 @@ import java.util.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SecurityConfig {
     String[] PUBLIC_ENDPOINT_POST = {"/user/create", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh", "/book/detail/*",
-    "/book", "/category", "/category/*/get-books", "/post/detail/*", "/post", "/comment/detail/*", "/like/total-likes/*"};
+    "/book", "/category", "/category/*/get-books", "/post/detail/*", "/post", "/comment/detail/*", "/comment/*", "/like/total-likes/*"};
     CustomJwtDecoder customJwtDecoder;
     RoleRepository roleRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request->
-                request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT_POST).permitAll()
+                request.requestMatchers(PUBLIC_ENDPOINT_POST).permitAll()
                 .anyRequest().authenticated());
         httpSecurity.oauth2ResourceServer(oauth2 ->
                 oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(customJwtDecoder)
@@ -48,7 +48,7 @@ public class SecurityConfig {
     JwtAuthenticationConverter jwtAuthenticationConverter(){
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
-            Collection<String> roles = jwt.getClaimAsStringList("scope");
+            Collection<String> roles = Arrays.asList(jwt.getClaimAsString("scope").split(" "));
             Set<GrantedAuthority> authorities = new HashSet<>();
             for(String roleCode : roles){
                 authorities.add(new SimpleGrantedAuthority(roleCode));

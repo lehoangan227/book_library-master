@@ -7,6 +7,7 @@ import com.project.Book.dto.response.PostInListResponse;
 import com.project.Book.dto.response.PostResponse;
 import com.project.Book.entity.Post;
 import com.project.Book.entity.User;
+import com.project.Book.enums.Role;
 import com.project.Book.exception.AppException;
 import com.project.Book.mapper.PostMapper;
 import com.project.Book.repository.PostRepository;
@@ -39,23 +40,27 @@ public class PostServiceImp implements PostService {
 
     @Override
     public PostResponse createPost(PostRequest postRequest) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        User user = userRepository.findByUsernameAndIsDeleteFalse(username)
+        int userId = Integer.parseInt(UtilClass.getUserId());
+        User user = userRepository.findByUserIdAndIsDeleteFalse(userId)
                 .orElseThrow(()->new AppException("error.user.notfound", HttpStatus.NOT_FOUND));
         Post post = postMapper.requestDtoToEntity(postRequest);
         post.setUser(user);
         post.setCreateAt(LocalDateTime.now());
         post = postRepository.save(post);
         PostResponse postResponse = postMapper.entityToResponseDTO(post);
-        postResponse.setPostAuthor(username);
+        postResponse.setPostAuthor(user.getUsername());
         return postResponse;
     }
 
     @Override
     public PostResponse updatePost(int postId, PostRequest postRequest) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isUser = auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(Role.GROUP_USER.getRoleCode()));
+        if(isUser&&postRepository.userHasPost(postId,Integer.parseInt(UtilClass.getUserId()))!=1){
+            throw new AppException("error.post.notfound", HttpStatus.NOT_FOUND);
+        }
         Post post = postRepository.findByPostIdAndIsDeleteFalse(postId)
-                .orElseThrow(()->new AppException("error.post.notfound", HttpStatus.NOT_FOUND));
+                    .orElseThrow(()->new AppException("error.post.notfound", HttpStatus.NOT_FOUND));
         postMapper.updateDtoToEntity(postRequest, post);
         post.setUpdateAt(LocalDateTime.now());
         post = postRepository.save(post);
@@ -67,7 +72,12 @@ public class PostServiceImp implements PostService {
     @Override
     @Transactional
     public void deletePost(int postId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isUser = auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(Role.GROUP_USER.getRoleCode()));
         if(postRepository.existsByPostIdAndIsDeleteFalse(postId)){
+            if(isUser&&postRepository.userHasPost(postId,Integer.parseInt(UtilClass.getUserId()))!=1){
+                throw new AppException("error.post.notfound", HttpStatus.NOT_FOUND);
+            }
             postRepository.softDeleteByPostId(postId);
         }else{
             throw new AppException("error.post.notfound", HttpStatus.NOT_FOUND);

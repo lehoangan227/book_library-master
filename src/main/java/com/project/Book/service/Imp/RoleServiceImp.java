@@ -76,8 +76,8 @@ public class RoleServiceImp implements RoleService {
             throw new AppException("error.code.existed", HttpStatus.CONFLICT);
         }
         roleMapper.updateDTOToEntity(role,roleUpdateRequest);
-        List<User> users = new ArrayList<>();
-        List<Permission> permissions = new ArrayList<>();
+        List<User> users;
+        List<Permission> permissions;
         if(roleUpdateRequest.getUserIds()!=null && !roleUpdateRequest.getUserIds().isEmpty()){
             users = userRepository.findAllByUserIdInAndIsDeleteFalse(roleUpdateRequest.getUserIds());
             if(users.size()!=roleUpdateRequest.getUserIds().size()){

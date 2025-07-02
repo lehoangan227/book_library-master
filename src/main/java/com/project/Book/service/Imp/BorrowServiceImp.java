@@ -8,6 +8,7 @@ import com.project.Book.dto.response.PageResponse;
 import com.project.Book.entity.Book;
 import com.project.Book.entity.Borrowing;
 import com.project.Book.entity.User;
+import com.project.Book.enums.Role;
 import com.project.Book.enums.Status;
 import com.project.Book.exception.AppException;
 import com.project.Book.mapper.BorrowMapper;
@@ -67,7 +68,7 @@ public class BorrowServiceImp implements BorrowService {
             titles.add(book.getBookTitle());
         }
         borrow.setBooks(books);
-        if(borrowRepository.hasOverDueBorrow(userId)==1){
+        if(borrowRepository.hasOverDueBorrow(userId, Status.OVERDUE.getStatus())==1){
             throw new AppException("error.borrow.overdue",HttpStatus.CONFLICT);
         }
         borrow.setStatus(Status.CREATED.getStatus());
@@ -109,7 +110,7 @@ public class BorrowServiceImp implements BorrowService {
         Page<Borrowing> borrowPage = null;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isUser = auth.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("GROUP_USER"));
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(Role.GROUP_USER.getRoleCode()));
         if(!isUser){
             if(searchBorrowRequest==null){
                 searchBorrowRequest=new SearchBorrowRequest();
@@ -149,7 +150,7 @@ public class BorrowServiceImp implements BorrowService {
     public BorrowResponse getBorrow(int borrowId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isUser = auth.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("GROUP_USER"));
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(Role.GROUP_USER.getRoleCode()));
         Borrowing borrow;
         if(isUser){
             int userId = Integer.parseInt(UtilClass.getUserId());
@@ -174,14 +175,6 @@ public class BorrowServiceImp implements BorrowService {
                 .orElseThrow(()->new AppException("error.borrow.notfound", HttpStatus.NOT_FOUND));
         String username = null;
         List<String>titles = new ArrayList<>();
-        if(borrowUpdateRequest.getUserId()!=null){
-            User user = userRepository.findByUserIdAndIsDeleteFalse(borrowUpdateRequest.getUserId())
-                    .orElseThrow(()->new AppException("error.user.notfound", HttpStatus.NOT_FOUND));
-            username = user.getUsername();
-            borrow.setUser(user);
-        }else{
-            username = borrow.getUser().getUsername();
-        }
         if(borrowUpdateRequest.getBookIds()!=null&&!borrowUpdateRequest.getBookIds().isEmpty()){
             List<Book> booksBefore = borrow.getBooks();
             for (Book book : booksBefore) {

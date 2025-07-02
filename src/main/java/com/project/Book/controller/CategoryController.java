@@ -2,6 +2,7 @@ package com.project.Book.controller;
 
 import com.project.Book.config.Translator;
 import com.project.Book.dto.request.CategoryRequest;
+import com.project.Book.dto.request.CategoryUpdateRequest;
 import com.project.Book.dto.request.SearchBookRequest;
 import com.project.Book.dto.response.ApiResponse;
 import com.project.Book.dto.response.BookInListResponse;
@@ -41,12 +42,12 @@ public class CategoryController {
     @PutMapping("/update/{cateId}")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<CategoryResponse>> updateCategory(@PathVariable("cateId") int cateId,
-                                                                        @RequestBody @Valid CategoryRequest categoryRequest,
+                                                                        @RequestBody @Valid CategoryUpdateRequest categoryUpdateRequest,
                                                                         HttpServletRequest httpServletRequest) {
         ApiResponse<CategoryResponse> apiResponse = ApiResponse.<CategoryResponse>builder()
                 .code("category.update.success")
                 .message(Translator.toLocale("category.update.success"))
-                .data(categoryService.updateCategory(cateId, categoryRequest)).build();
+                .data(categoryService.updateCategory(cateId, categoryUpdateRequest)).build();
         return ResponseEntity.ok(apiResponse);
     }
     @DeleteMapping("/delete/{cateId}")

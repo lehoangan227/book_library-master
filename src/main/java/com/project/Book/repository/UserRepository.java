@@ -46,6 +46,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
         FROM role r 
         WHERE r.role_code = :roleCode
     """, nativeQuery = true)
-    void insertDefaultRole(@Param("userId") int userId, @Param("roleCode") String roleCode);
+    void setDefaultRole(@Param("userId") int userId, @Param("roleCode") String roleCode);
 
 }

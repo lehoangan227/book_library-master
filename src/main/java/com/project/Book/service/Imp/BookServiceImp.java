@@ -1,6 +1,7 @@
 package com.project.Book.service.Imp;
 
 import com.project.Book.dto.request.BookRequest;
+import com.project.Book.dto.request.BookUpdateRequest;
 import com.project.Book.dto.request.SearchBookRequest;
 import com.project.Book.dto.response.BookInListResponse;
 import com.project.Book.dto.response.BookResponse;
@@ -56,16 +57,16 @@ public class BookServiceImp implements BookService {
     }
 
     @Override
-    public BookResponse updateBook(int bookId, BookRequest bookRequest) {
+    public BookResponse updateBook(int bookId, BookUpdateRequest bookUpdateRequest) {
         Book book = bookRepository.findByBookIdAndIsDeleteFalse(bookId).orElseThrow(()->new AppException("error.book.notfound", HttpStatus.NOT_FOUND));
-        if(bookRepository.existsByBookCodeAndIsDeleteFalse(bookRequest.getBookCode())&&!book.getBookCode().equals(bookRequest.getBookCode())){
+        if(bookRepository.existsByBookCodeAndIsDeleteFalse(bookUpdateRequest.getBookCode())&&!book.getBookCode().equals(bookUpdateRequest.getBookCode())){
             throw new AppException("error.code.existed", HttpStatus.CONFLICT);
         }
-        bookMapper.updateDtoToEntity(book, bookRequest);
-        List<Category> categories = new ArrayList<>();
-        if(bookRequest.getCateIds()!=null&&!bookRequest.getCateIds().isEmpty()){
-            categories = categoryRepository.findAllByCateIdInAndIsDeleteFalse(bookRequest.getCateIds());
-            if(categories.size()!=bookRequest.getCateIds().size()){
+        List<Category> categories = book.getCategories();
+        bookMapper.updateDtoToEntity(book, bookUpdateRequest);
+        if(bookUpdateRequest.getCateIds()!=null&&!bookUpdateRequest.getCateIds().isEmpty()){
+            categories = categoryRepository.findAllByCateIdInAndIsDeleteFalse(bookUpdateRequest.getCateIds());
+            if(categories.size()!=bookUpdateRequest.getCateIds().size()){
                 throw new AppException("error.category.notfound", HttpStatus.NOT_FOUND);
             }
             book.setCategories(categories);

@@ -17,9 +17,9 @@ import java.util.Optional;
 public interface BorrowRepository extends JpaRepository<Borrowing, Integer> {
     Optional<Borrowing> findByBorrowIdAndIsDeleteFalse(int borrowId);
     @Query(value = """
-        select exists(select 1 from borrowing b where b.status = 'overdue' and b.user_id = :userId and b.is_delete = false)
+        select exists(select 1 from borrowing b where b.status = :status and b.user_id = :userId and b.is_delete = false)
     """, nativeQuery = true)
-    int hasOverDueBorrow(@Param("userId") int userId);
+    int hasOverDueBorrow(@Param("userId") int userId, @Param("status")String status);
 
     @Modifying
     @Query(value = """

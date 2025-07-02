@@ -1,6 +1,7 @@
 package com.project.Book.service.Imp;
 
 import com.project.Book.dto.request.CategoryRequest;
+import com.project.Book.dto.request.CategoryUpdateRequest;
 import com.project.Book.dto.request.SearchBookRequest;
 import com.project.Book.dto.response.BookInListResponse;
 import com.project.Book.dto.response.CategoryResponse;
@@ -46,12 +47,12 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public CategoryResponse updateCategory(int cateId, CategoryRequest categoryRequest) {
+    public CategoryResponse updateCategory(int cateId, CategoryUpdateRequest categoryUpdateRequest) {
         Category category = categoryRepository.findByCateIdAndIsDeleteFalse(cateId).orElseThrow(()->new AppException("error.category.notfound",HttpStatus.NOT_FOUND));
-        if(categoryRepository.existsByCateCodeAndIsDeleteFalse(categoryRequest.getCateCode())&&!category.getCateCode().equals(categoryRequest.getCateCode())){
+        if(categoryRepository.existsByCateCodeAndIsDeleteFalse(categoryUpdateRequest.getCateCode())&&!category.getCateCode().equals(categoryUpdateRequest.getCateCode())){
             throw new AppException("error.code.existed", HttpStatus.NOT_FOUND);
         }
-        categoryMapper.updateDtoToEntity(category, categoryRequest);
+        categoryMapper.updateDtoToEntity(category, categoryUpdateRequest);
         return categoryMapper.entityToResponseDTO(categoryRepository.save(category));
     }
 

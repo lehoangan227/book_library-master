@@ -1,6 +1,7 @@
 package com.project.Book.service;
 
 import com.project.Book.dto.request.CategoryRequest;
+import com.project.Book.dto.request.CategoryUpdateRequest;
 import com.project.Book.dto.request.SearchBookRequest;
 import com.project.Book.dto.response.BookInListResponse;
 import com.project.Book.dto.response.CategoryResponse;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public interface CategoryService {
     CategoryResponse createCategory(CategoryRequest categoryRequest);
-    CategoryResponse updateCategory(int cateId, CategoryRequest categoryRequest);
+    CategoryResponse updateCategory(int cateId, CategoryUpdateRequest categoryUpdateRequest);
     void deleteCategory(int cateId);
     CategoryResponse getCategory(int cateId);
     PageResponse<CategoryResponse> getCategories(int pageNo, int pageSize, String cateName, List<String> sorts);
