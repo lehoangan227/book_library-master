@@ -17,5 +17,5 @@ public interface CategoryService {
     CategoryResponse getCategory(int cateId);
     PageResponse<CategoryResponse> getCategories(int pageNo, int pageSize, String cateName, List<String> sorts);
     PageResponse<BookInListResponse> getBooksByCategory(int pageNo, int pageSize, SearchBookRequest searchBookRequest, int cateId, List<String> sorts);
-    Map<String,Integer> statisticBookQuantityByCategory();
+    Map<String,Long> statisticBookQuantityByCategory();
 }

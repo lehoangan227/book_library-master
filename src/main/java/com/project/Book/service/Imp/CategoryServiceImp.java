@@ -118,9 +118,9 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public Map<String, Integer> statisticBookQuantityByCategory() {
+    public Map<String, Long> statisticBookQuantityByCategory() {
         List<Object[]> results = categoryRepository.statisticBookQuantityByCategory();
-        Map<String, Integer> resultMap = results.stream().collect(Collectors.toMap(arr -> (String) arr[0], arr -> (Integer) arr[1]));
+        Map<String, Long> resultMap = results.stream().collect(Collectors.toMap(arr -> (String) arr[0], arr -> (Long) arr[1]));
         return resultMap;
     }
 }
