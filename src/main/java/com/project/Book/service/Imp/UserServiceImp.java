@@ -12,6 +12,8 @@ import com.project.Book.mapper.UserMapper;
 import com.project.Book.repository.UserRepository;
 import com.project.Book.service.UserService;
 import com.project.Book.util.UtilClass;
+import com.project.Book.util.excel.BaseExport;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,6 +28,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -103,5 +108,14 @@ public class UserServiceImp implements UserService {
                 .totalElements(users.getTotalElements())
                 .items(users.getContent().stream().map(userMapper::entityToResponseDTO).toList())
                 .build();
+    }
+
+    @Override
+    public void exportToExcel(HttpServletResponse httpServletResponse) throws IOException {
+        List<User> users = userRepository.findAll();
+        new BaseExport<>(users)
+                .writeHeaderLine(new String[]{"ID","Username","Password","Full name","Phone number","Email","Day of birth","Address"})
+                .writeDateLine(new String[]{"userId","username","password","fullName","phoneNumber","email","dob","address"},User.class)
+                .export(httpServletResponse);
     }
 }

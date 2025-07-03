@@ -7,8 +7,11 @@ import com.project.Book.dto.request.UserUpdateRequest;
 import com.project.Book.dto.response.ApiResponse;
 import com.project.Book.dto.response.PageResponse;
 import com.project.Book.dto.response.UserResponse;
+import com.project.Book.entity.User;
 import com.project.Book.service.UserService;
+import com.project.Book.util.excel.BaseExport;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -82,6 +89,19 @@ public class UserController {
                 .message(Translator.toLocale("user.getlist.success"))
                 .data(userService.getUsers(pageNo,pageSize,searchUserRequest,sorts))
                 .build();
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/export")
+    @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
+    public ResponseEntity<ApiResponse> exportToExcel(HttpServletResponse httpServletResponse,
+                                                     HttpServletRequest httpServletRequest) throws IOException {
+        httpServletResponse.setContentType("application/octet-stream");
+        httpServletResponse.setHeader("Content-Disposition", "attachment; filename=users_" + new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(new Date()) + ".xlsx");
+        userService.exportToExcel(httpServletResponse);
+        ApiResponse apiResponse = ApiResponse.builder()
+                .code("user.export-to-excel.success")
+                .message(Translator.toLocale("user.export-to-excel.success")).build();
         return ResponseEntity.ok(apiResponse);
     }
 }
