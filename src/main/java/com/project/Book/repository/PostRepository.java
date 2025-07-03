@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -37,4 +38,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             where p.post_id = :postId and u.user_id = :userId and p.is_delete = false and u.is_delete = false)
     """, nativeQuery = true)
     int userHasPost(@Param("postId") int postId, @Param("userId") int userId);
+
+    @Query("""
+        select p from LikePost lk join lk.post p join lk.user u where p.isDelete = false and u.isDelete = false group by p 
+            order by count(lk) asc limit 5
+    """)
+    List<Post> findTop5Posts();
 }

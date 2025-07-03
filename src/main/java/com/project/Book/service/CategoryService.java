@@ -8,6 +8,7 @@ import com.project.Book.dto.response.CategoryResponse;
 import com.project.Book.dto.response.PageResponse;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CategoryService {
     CategoryResponse createCategory(CategoryRequest categoryRequest);
@@ -16,4 +17,5 @@ public interface CategoryService {
     CategoryResponse getCategory(int cateId);
     PageResponse<CategoryResponse> getCategories(int pageNo, int pageSize, String cateName, List<String> sorts);
     PageResponse<BookInListResponse> getBooksByCategory(int pageNo, int pageSize, SearchBookRequest searchBookRequest, int cateId, List<String> sorts);
+    Map<String,Integer> statisticBookQuantityByCategory();
 }

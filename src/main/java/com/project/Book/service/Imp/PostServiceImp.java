@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -112,5 +113,10 @@ public class PostServiceImp implements PostService {
                 .totalElements(postPage.getTotalElements())
                 .items(postInListResponses)
                 .build();
+    }
+
+    @Override
+    public List<PostResponse> getTop5Posts() {
+        return postRepository.findTop5Posts().stream().map(postMapper::entityToResponseDTO).collect(Collectors.toList());
     }
 }

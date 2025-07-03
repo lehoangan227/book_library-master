@@ -11,5 +11,6 @@ public interface LikeService {
     LikeResponse LikePost(int postId);
     void unlikePost(int postId);
     Integer getTotalLikes(int postId);
-    PageResponse<PostInListResponse> getPostsLikedByUser(int pageNo, int pageSize, List<String> sorts, int userId);
+    PageResponse<PostInListResponse> getPostsLiked(int pageNo, int pageSize, List<String> sorts);
+    PageResponse<String> getUsersLikedPost(int pageNo, int pageSize, int postId);
 }

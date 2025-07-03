@@ -14,4 +14,5 @@ public interface PostService {
     void deletePost(int postId);
     PostResponse getPost(int postId);
     PageResponse<PostInListResponse> getPosts(int pageNo, int pageSize, List<String> sorts, SearchPostRequest searchPostRequest);
+    List<PostResponse> getTop5Posts();
 }

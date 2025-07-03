@@ -27,7 +27,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -112,5 +115,12 @@ public class CategoryServiceImp implements CategoryService {
                 .totalElements(books.getTotalElements())
                 .items(bookResponses)
                 .build();
+    }
+
+    @Override
+    public Map<String, Integer> statisticBookQuantityByCategory() {
+        List<Object[]> results = categoryRepository.statisticBookQuantityByCategory();
+        Map<String, Integer> resultMap = results.stream().collect(Collectors.toMap(arr -> (String) arr[0], arr -> (Integer) arr[1]));
+        return resultMap;
     }
 }

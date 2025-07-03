@@ -12,6 +12,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -43,4 +45,9 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
         AND b.is_delete = false
     """, nativeQuery = true)
     Page<Book> searchBooksByCategory(Pageable pageable, @Param("request") SearchBookRequest request, @Param("cateId") int cateId);
+
+    @Query("""
+        select c.cateName, count(b) from Category c join c.books b where c.isDelete = false and b.isDelete = false group by c.cateId
+    """)
+    List<Object[]> statisticBookQuantityByCategory();
 }
