@@ -12,13 +12,10 @@ import com.project.Book.dto.request.RefreshTokenRequest;
 import com.project.Book.dto.response.AuthenticationResponse;
 import com.project.Book.dto.response.IntrospectResponse;
 import com.project.Book.entity.RefreshToken;
-import com.project.Book.entity.Permission;
 import com.project.Book.entity.Role;
 import com.project.Book.entity.User;
 import com.project.Book.exception.AppException;
 import com.project.Book.repository.RefreshTokenRepository;
-import com.project.Book.repository.PermissionRepository;
-import com.project.Book.repository.RoleRepository;
 import com.project.Book.repository.UserRepository;
 import com.project.Book.service.AuthenticationService;
 import lombok.AccessLevel;
@@ -64,6 +61,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
 
     @Override
     public AuthenticationResponse login(AuthenticationRequest authenticationRequest) throws JOSEException, ParseException {
+        log.info("test log");
         User user = userRepository.findByUsernameAndIsDeleteFalse(authenticationRequest.getUsername())
                 .orElseThrow(()->new AppException("error.user.notfound", HttpStatus.NOT_FOUND));
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);

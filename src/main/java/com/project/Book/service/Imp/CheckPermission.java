@@ -1,7 +1,11 @@
 package com.project.Book.service.Imp;
 
+import com.project.Book.config.BeanConfig;
 import com.project.Book.enums.Role;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -11,20 +15,15 @@ import java.io.InputStream;
 import java.util.Properties;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults (level = AccessLevel.PRIVATE, makeFinal = true)
 public class CheckPermission {
+    BeanConfig beanConfig;
     public boolean fileRole(HttpServletRequest httpServletRequest){
         String uri = httpServletRequest.getRequestURI();
         uri = uri.replaceAll("^/|/$", "").replaceAll("/", ".");
         uri = uri.replaceAll("\\.\\d+$", "");
-        Properties properties = new Properties();
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream("role.properties")) {
-            if (input == null) {
-                throw new RuntimeException("File role.properties not found in classpath");
-            }
-            properties.load(input);
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to load role properties", ex);
-        }
+        Properties properties = beanConfig.getPermissionFromFile();
         String requiredPermission = properties.getProperty(uri);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication.getAuthorities() == null) {
@@ -35,8 +34,6 @@ public class CheckPermission {
         if (isAdmin) {
             return true;
         }
-        boolean isPass = authentication.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals(requiredPermission));
         return authentication.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals(requiredPermission));
     }

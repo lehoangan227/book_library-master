@@ -5,6 +5,8 @@ import com.project.Book.dto.response.ApiResponse;
 import com.project.Book.dto.response.PostResponse;
 import com.project.Book.service.CategoryService;
 import com.project.Book.service.PostService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +24,12 @@ import java.util.Map;
 @RequestMapping("/dashboard")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Dashboard Controller")
 public class DashBoardController {
     PostService postService;
     CategoryService categoryService;
+
+    @Operation(summary = "get top 5 posts", description = "Api get top 5 posts have most likes")
     @GetMapping("/top-5-posts")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<List<PostResponse>>> getTop5Posts(HttpServletRequest httpServletRequest) {
@@ -35,6 +40,7 @@ public class DashBoardController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @Operation(summary = "statistic book quantity", description = "Api statistic book quantity by category")
     @GetMapping("/statistic-book-quantity-by-category")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<Map<String, Long>>> statisticBookQuantityByCategory(HttpServletRequest httpServletRequest) {

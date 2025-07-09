@@ -18,3 +18,22 @@ jwt:
   signer-key: "auhhS1ma0NpTiuf5Ia+sOtiq4oTpW14W1FEV4NanRXwkPuKyaP4mxbQBjhEvWL2V"
   valid-duration: 300 #second
   refreshable-duration: 86400 #second
+
+logging:
+  file:
+    name: logs/app.log
+  level:
+    root: info
+  logback:
+    rolling policy:
+      max-file-size: 10MB            # Mỗi file log tối đa 10MB
+      max-history: 7                 # Giữ lại 7 file log cũ
+      total-size-cap: 100MB          # Tổng dung lượng log không vượt quá 100MB
+      clean-history-on-start: false  # Không xóa log cũ khi app restart
+
+open:
+  api:
+    title: Book Library API
+    version: v1.0.0
+    description: Description
+    serverUrl: http://localhost:8080/api/v1/library

@@ -9,6 +9,9 @@ import com.project.Book.dto.response.BookInListResponse;
 import com.project.Book.dto.response.CategoryResponse;
 import com.project.Book.dto.response.PageResponse;
 import com.project.Book.service.CategoryService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -27,8 +30,11 @@ import java.util.List;
 @RequestMapping("/category")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Category Controller")
 public class CategoryController {
     CategoryService categoryService;
+
+    @Operation(summary = "create category", description = "Api create category")
     @PostMapping("/create")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<CategoryResponse>> createCategory(@RequestBody @Valid CategoryRequest categoryRequest,
@@ -39,6 +45,8 @@ public class CategoryController {
                 .data(categoryService.createCategory(categoryRequest)).build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @Operation(summary = "update category", description = "Api update category")
     @PutMapping("/update/{cateId}")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<CategoryResponse>> updateCategory(@PathVariable("cateId") int cateId,
@@ -50,6 +58,8 @@ public class CategoryController {
                 .data(categoryService.updateCategory(cateId, categoryUpdateRequest)).build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @Operation(summary = "delete category", description = "Api delete category")
     @DeleteMapping("/delete/{cateId}")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse> deleteCategory(@PathVariable("cateId")int cateId, HttpServletRequest httpServletRequest) {
@@ -60,6 +70,8 @@ public class CategoryController {
                 .build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @Operation(summary = "get detail category", description = "Api get detail category")
     @GetMapping("/detail/{cateId}")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<CategoryResponse>> getCategory(@PathVariable("cateId")int cateId, HttpServletRequest httpServletRequest) {
@@ -69,6 +81,8 @@ public class CategoryController {
                 .data(categoryService.getCategory(cateId)).build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @Operation(summary = "get list categories", description = "Api list categories", security = @SecurityRequirement(name = ""))
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<CategoryResponse>>> getCategories(@RequestParam(name ="pageNo", defaultValue = "0", required = false)int pageNo,
                                                                         @RequestParam(name = "pageSize", defaultValue = "10", required = false)int pageSize,
@@ -80,6 +94,8 @@ public class CategoryController {
                 .data(categoryService.getCategories(pageNo, pageSize, cateName, sorts)).build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @Operation(summary = "get books by category", description = "Api get books by category", security = @SecurityRequirement(name = ""))
     @GetMapping("/{cateId}/get-books")
     public ResponseEntity<ApiResponse<PageResponse<BookInListResponse>>> getBooksByCategory(@RequestParam(name ="pageNo", defaultValue = "0", required = false)int pageNo,
                                                                                   @RequestParam(name = "pageSize", defaultValue = "10", required = false)int pageSize,

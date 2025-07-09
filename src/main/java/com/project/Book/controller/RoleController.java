@@ -5,6 +5,8 @@ import com.project.Book.dto.request.RoleRequest;
 import com.project.Book.dto.request.RoleUpdateRequest;
 import com.project.Book.dto.response.*;
 import com.project.Book.service.RoleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -21,8 +23,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequestMapping("/role")
+@Tag(name = "Role Controller")
 public class RoleController {
     RoleService roleService;
+
+    @Operation(summary = "create role", description = "Api create role")
     @PostMapping("/create")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<RoleResponse>> createRole(@RequestBody @Valid RoleRequest roleRequest,
@@ -34,6 +39,8 @@ public class RoleController {
                 .build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @Operation(summary = "update role", description = "Api update role")
     @PutMapping("/update/{roleId}")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<RoleResponse>> updateRole(@PathVariable("roleId") int roleId,
@@ -46,6 +53,8 @@ public class RoleController {
                 .build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @Operation(summary = "delete role", description = "Api delete role")
     @DeleteMapping("/delete/{roleId}")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse> deleteRole(@PathVariable("roleId") int roleId, HttpServletRequest httpServletRequest) {
@@ -56,6 +65,8 @@ public class RoleController {
                 .build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @Operation(summary = "get detail role", description = "Api get detail role")
     @GetMapping("/detail/{roleId}")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<RoleResponse>> getRole(@PathVariable("roleId") int roleId, HttpServletRequest httpServletRequest) {
@@ -66,6 +77,8 @@ public class RoleController {
                 .build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @Operation(summary = "get list roles", description = "Api get list roles")
     @GetMapping
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<PageResponse<RoleInListResponse>>> getRoles(@RequestParam(name ="pageNo", defaultValue = "0", required = false)int pageNo,

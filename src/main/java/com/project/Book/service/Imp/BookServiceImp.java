@@ -38,14 +38,14 @@ public class BookServiceImp implements BookService {
 
     @Override
     public BookResponse createBook(BookRequest bookRequest) {
-        if(bookRepository.existsByBookCodeAndIsDeleteFalse(bookRequest.getBookCode())){
+        if (bookRepository.existsByBookCodeAndIsDeleteFalse(bookRequest.getBookCode())) {
             throw new AppException("error.code.existed", HttpStatus.CONFLICT);
         }
         Book book = bookMapper.requestDtoToEntity(bookRequest);
         List<Category> categories = new ArrayList<>();
-        if(bookRequest.getCateIds()!=null&&!bookRequest.getCateIds().isEmpty()){
+        if (bookRequest.getCateIds() != null && !bookRequest.getCateIds().isEmpty()) {
             categories = categoryRepository.findAllByCateIdInAndIsDeleteFalse(bookRequest.getCateIds());
-            if(categories.size()!=bookRequest.getCateIds().size()){
+            if (categories.size() != bookRequest.getCateIds().size()) {
                 throw new AppException("error.category.notfound", HttpStatus.NOT_FOUND);
             }
             book.setCategories(categories);
@@ -58,15 +58,15 @@ public class BookServiceImp implements BookService {
 
     @Override
     public BookResponse updateBook(int bookId, BookUpdateRequest bookUpdateRequest) {
-        Book book = bookRepository.findByBookIdAndIsDeleteFalse(bookId).orElseThrow(()->new AppException("error.book.notfound", HttpStatus.NOT_FOUND));
-        if(bookRepository.existsByBookCodeAndIsDeleteFalse(bookUpdateRequest.getBookCode())&&!book.getBookCode().equals(bookUpdateRequest.getBookCode())){
+        Book book = bookRepository.findByBookIdAndIsDeleteFalse(bookId).orElseThrow(() -> new AppException("error.book.notfound", HttpStatus.NOT_FOUND));
+        if (bookRepository.existsByBookCodeAndIsDeleteFalse(bookUpdateRequest.getBookCode()) && !book.getBookCode().equals(bookUpdateRequest.getBookCode())) {
             throw new AppException("error.code.existed", HttpStatus.CONFLICT);
         }
         List<Category> categories = book.getCategories();
         bookMapper.updateDtoToEntity(book, bookUpdateRequest);
-        if(bookUpdateRequest.getCateIds()!=null&&!bookUpdateRequest.getCateIds().isEmpty()){
+        if (bookUpdateRequest.getCateIds() != null && !bookUpdateRequest.getCateIds().isEmpty()) {
             categories = categoryRepository.findAllByCateIdInAndIsDeleteFalse(bookUpdateRequest.getCateIds());
-            if(categories.size()!=bookUpdateRequest.getCateIds().size()){
+            if (categories.size() != bookUpdateRequest.getCateIds().size()) {
                 throw new AppException("error.category.notfound", HttpStatus.NOT_FOUND);
             }
             book.setCategories(categories);
@@ -80,16 +80,16 @@ public class BookServiceImp implements BookService {
     @Override
     @Transactional
     public void deleteBook(int bookId) {
-        if(bookRepository.existsByBookIdAndIsDeleteFalse(bookId)){
+        if (bookRepository.existsByBookIdAndIsDeleteFalse(bookId)) {
             bookRepository.softDeleteByBookId(bookId);
-        }else{
+        } else {
             throw new AppException("error.book.notfound", HttpStatus.NOT_FOUND);
         }
     }
 
     @Override
     public BookResponse getBook(int bookId) {
-        Book book = bookRepository.findByBookIdAndIsDeleteFalse(bookId).orElseThrow(()->new AppException("error.book.notfound", HttpStatus.NOT_FOUND));
+        Book book = bookRepository.findByBookIdAndIsDeleteFalse(bookId).orElseThrow(() -> new AppException("error.book.notfound", HttpStatus.NOT_FOUND));
         BookResponse bookResponse = bookMapper.entityToResponseDTO(book);
         bookResponse.setCateNames(new ArrayList<>(book.getCategories().stream().map(Category::getCateName).toList()));
         return bookResponse;
@@ -98,16 +98,16 @@ public class BookServiceImp implements BookService {
     @Override
     public PageResponse<BookInListResponse> getBooks(int pageNo, int pageSize, SearchBookRequest searchBookRequest, List<String> sorts) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(UtilClass.getOrders(sorts)));
-        if(searchBookRequest == null){
+        if (searchBookRequest == null) {
             searchBookRequest = new SearchBookRequest();
         }
         Page<Book> books = bookRepository.searchBooks(pageable, searchBookRequest);
         List<BookInListResponse> bookResponses = books.getContent().stream().map(bookMapper::entityToBookInListDTO).toList();
-        for(int i = 0;i<bookResponses.size();i++){
+        for (int i = 0; i < bookResponses.size(); i++) {
             Book book = books.getContent().get(i);
             BookInListResponse bookResponse = bookResponses.get(i);
             List<String> cateNames = new ArrayList<>();
-            if(book.getCategories()!=null&&!book.getCategories().isEmpty()){
+            if (book.getCategories() != null && !book.getCategories().isEmpty()) {
                 cateNames = book.getCategories().stream()
                         .map(Category::getCateName)
                         .toList();

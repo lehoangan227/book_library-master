@@ -10,6 +10,9 @@ import com.project.Book.dto.response.ApiResponse;
 import com.project.Book.dto.response.AuthenticationResponse;
 import com.project.Book.dto.response.IntrospectResponse;
 import com.project.Book.service.AuthenticationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,8 +28,11 @@ import java.text.ParseException;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Authentication Controller")
 public class AuthenticationController {
     AuthenticationService authenticationService;
+
+    @Operation(summary = "login", description = "Api login to get token", security = @SecurityRequirement(name = ""))
     @PostMapping("/token")
     public ResponseEntity<ApiResponse<AuthenticationResponse>> login(@RequestBody AuthenticationRequest authenticationRequest) throws JOSEException, ParseException {
 
@@ -38,6 +44,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @Operation(summary = "introspect token", description = "Api introspect token", security = @SecurityRequirement(name = ""))
     @PostMapping("/introspect")
     public ResponseEntity<ApiResponse<IntrospectResponse>> introspect(@RequestBody IntrospectRequest introspectRequest) throws ParseException, JOSEException {
         ApiResponse<IntrospectResponse> apiResponse = ApiResponse.<IntrospectResponse>builder()
@@ -47,6 +54,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @Operation(summary = "logout", description = "Api logout", security = @SecurityRequirement(name = ""))
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse> logout(@RequestBody LogoutRequest logoutRequest) throws ParseException, JOSEException {
         authenticationService.logout(logoutRequest);
@@ -57,6 +65,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @Operation(summary = "refresh token", description = "Api refresh token", security = @SecurityRequirement(name = ""))
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse> refreshToken(@RequestBody RefreshTokenRequest request) throws ParseException, JOSEException {
 

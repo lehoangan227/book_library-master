@@ -7,6 +7,8 @@ import com.project.Book.dto.response.PageResponse;
 import com.project.Book.dto.response.PermissionResponse;
 import com.project.Book.dto.response.RoleInListResponse;
 import com.project.Book.service.PermissionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -22,8 +24,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequestMapping("/permission")
+@Tag(name = "Permission Controller")
 public class PermissionController {
     PermissionService permissionService;
+
+    @Operation(summary = "create permission", description = "Api create permission")
     @PostMapping("/create")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<PermissionResponse>> createPermission(@RequestBody @Valid PermissionRequest permissionRequest,
@@ -36,6 +41,7 @@ public class PermissionController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @Operation(summary = "update permission", description = "Api update permission")
     @PutMapping("/update/{perId}")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<PermissionResponse>> updatePermission(@PathVariable("perId") int perId,
@@ -49,6 +55,7 @@ public class PermissionController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @Operation(summary = "delete permission", description = "Api delete permission")
     @DeleteMapping("/delete/{perId}")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse> deletePermission(@PathVariable("perId") int perId, HttpServletRequest httpServletRequest) {
@@ -60,6 +67,7 @@ public class PermissionController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @Operation(summary = "get detail permission", description = "Api get detail permission")
     @GetMapping("/detail/{perId}")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<PermissionResponse>> getPermission(@PathVariable("perId") int perId,
@@ -72,6 +80,7 @@ public class PermissionController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @Operation(summary = "get list permissions", description = "Api get list permissions")
     @GetMapping
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<PageResponse<PermissionResponse>>> getPermissions(@RequestParam(name ="pageNo", defaultValue = "0", required = false)int pageNo,
@@ -86,6 +95,7 @@ public class PermissionController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @Operation(summary = "get permissions by user", description = "Api get permissions by user")
     @GetMapping("/find-by-user/{userId}")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<List<PermissionResponse>>> getPermissionsByUser(@PathVariable("userId") int userId,

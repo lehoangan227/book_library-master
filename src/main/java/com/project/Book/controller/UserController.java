@@ -10,6 +10,9 @@ import com.project.Book.dto.response.UserResponse;
 import com.project.Book.entity.User;
 import com.project.Book.service.UserService;
 import com.project.Book.util.excel.BaseExport;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -34,8 +37,11 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequestMapping("/user")
 @Slf4j
+@Tag(name = "User Controller")
 public class UserController {
     UserService userService;
+
+    @Operation(summary = "create user", description = "Api create user", security = @SecurityRequirement(name = ""))
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<UserResponse>> createUser(@RequestBody @Valid UserCreateRequest userCreateRequest){
         ApiResponse<UserResponse> apiResponse = ApiResponse.<UserResponse>builder()
@@ -44,6 +50,8 @@ public class UserController {
                 .data(userService.createUser(userCreateRequest)).build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @Operation(summary = "update user", description = "Api update user")
     @PutMapping("/update/{userId}")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<UserResponse>> updateUser(@PathVariable("userId") int userId,
@@ -55,6 +63,8 @@ public class UserController {
                 .data(userService.updateUser(userId, userUpdateRequest)).build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @Operation(summary = "get detail user", description = "Api get detail user")
     @GetMapping("/detail/{userId}")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<UserResponse>> getUser(@PathVariable("userId") int userId, HttpServletRequest httpServletRequest){
@@ -65,6 +75,7 @@ public class UserController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @Operation(summary = "delete user", description = "Api delete user")
     @DeleteMapping("/delete/{userId}")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable("userId") int userId,HttpServletRequest httpServletRequest){
@@ -74,6 +85,8 @@ public class UserController {
                 .message(Translator.toLocale("user.delete.success")).build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @Operation(summary = "get list users", description = "Api get list users")
     @GetMapping
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<PageResponse<UserResponse>>> getUsers(@RequestParam(defaultValue = "0", required = false) int pageNo,
@@ -92,6 +105,7 @@ public class UserController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @Operation(summary = "export to excel", description = "Api export to excel file")
     @GetMapping("/export")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse> exportToExcel(HttpServletResponse httpServletResponse,

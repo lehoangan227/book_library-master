@@ -6,6 +6,9 @@ import com.project.Book.dto.request.BookUpdateRequest;
 import com.project.Book.dto.request.SearchBookRequest;
 import com.project.Book.dto.response.*;
 import com.project.Book.service.BookService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +24,11 @@ import java.util.List;
 @RequestMapping("/book")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Book Controller")
 public class BookController {
     BookService bookService;
+
+    @Operation(summary = "create book", description = "Api create a new book")
     @PostMapping("/create")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<BookResponse>> createBook(@RequestBody BookRequest bookRequest, HttpServletRequest httpServletRequest) {
@@ -32,6 +38,8 @@ public class BookController {
                 .data(bookService.createBook(bookRequest)).build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @Operation(summary = "update book", description = "Api update book")
     @PutMapping("/update/{bookId}")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<BookResponse>> updateBook(@PathVariable("bookId") int bookId, @RequestBody BookUpdateRequest bookUpdateRequest,
@@ -42,6 +50,8 @@ public class BookController {
                 .data(bookService.updateBook(bookId, bookUpdateRequest)).build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @Operation(summary = "delete book", description = "Api delete book")
     @DeleteMapping("/delete/{bookId}")
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse> deleteBook(@PathVariable("bookId")int bookId, HttpServletRequest httpServletRequest) {
@@ -52,6 +62,8 @@ public class BookController {
                 .build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @Operation(summary = "get detail book", description = "Api get detail book", security = @SecurityRequirement(name = ""))
     @GetMapping("/detail/{bookId}")
     public ResponseEntity<ApiResponse<BookResponse>> getBook(@PathVariable("bookId")int bookId, HttpServletRequest httpServletRequest) {
         ApiResponse<BookResponse> apiResponse = ApiResponse.<BookResponse>builder()
@@ -60,6 +72,8 @@ public class BookController {
                 .data(bookService.getBook(bookId)).build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @Operation(summary = "get list books", description = "Api get list books", security = @SecurityRequirement(name = ""))
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<BookInListResponse>>> getBooks(@RequestParam(name ="pageNo", defaultValue = "0", required = false)int pageNo,
                                                                                   @RequestParam(name = "pageSize", defaultValue = "10", required = false)int pageSize,
