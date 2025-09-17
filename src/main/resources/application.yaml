@@ -8,7 +8,7 @@ spring:
   datasource:
     url: "jdbc:mysql://localhost:3306/book_library"
     username: "root"
-    password: "AnHoangLe2003@"
+    password: "root"
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
