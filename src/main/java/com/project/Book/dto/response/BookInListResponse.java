@@ -16,4 +16,5 @@ public class BookInListResponse {
     String bookTitle;
     String authors;
     List<String> cateNames;
+    Integer quantityAvailable;
 }

@@ -76,7 +76,7 @@ public class BookController {
     @Operation(summary = "get list books", description = "Api get list books", security = @SecurityRequirement(name = ""))
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<BookInListResponse>>> getBooks(@RequestParam(name ="pageNo", defaultValue = "0", required = false)int pageNo,
-                                                                                  @RequestParam(name = "pageSize", defaultValue = "10", required = false)int pageSize,
+                                                                                  @RequestParam(name = "pageSize", defaultValue = "1000", required = false)int pageSize,
                                                                                   @RequestBody(required = false)SearchBookRequest searchBookRequest,
                                                                                   @RequestParam(name = "sorts", defaultValue = "bookId:asc", required = false) List<String> sorts){
         ApiResponse<PageResponse<BookInListResponse>> apiResponse = ApiResponse.<PageResponse<BookInListResponse>>builder()

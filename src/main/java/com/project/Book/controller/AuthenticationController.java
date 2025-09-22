@@ -29,7 +29,7 @@ import java.text.ParseException;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Authentication Controller")
-public class AuthenticationController {
+public class    AuthenticationController {
     AuthenticationService authenticationService;
 
     @Operation(summary = "login", description = "Api login to get token", security = @SecurityRequirement(name = ""))
