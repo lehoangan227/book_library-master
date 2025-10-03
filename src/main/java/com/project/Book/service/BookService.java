@@ -16,4 +16,5 @@ public interface BookService {
     void deleteBook(int bookId);
     BookResponse getBook(int bookId);
     PageResponse<BookInListResponse> getBooks(int pageNo, int pageSize, SearchBookRequest searchBookRequest, List<String> sorts);
+    Integer getTotalBooks();
 }

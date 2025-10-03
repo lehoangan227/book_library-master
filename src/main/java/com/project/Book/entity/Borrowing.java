@@ -19,6 +19,8 @@ public class Borrowing {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "borrow_id")
     int borrowId;
+    @Column(name = "create_date")
+    LocalDate createDate;
     @Column(name = "borrow_date")
     LocalDate borrowDate;
     @Column(name = "due_date", nullable = false)

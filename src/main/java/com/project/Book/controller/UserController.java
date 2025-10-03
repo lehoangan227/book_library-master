@@ -90,7 +90,7 @@ public class UserController {
     @GetMapping
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<PageResponse<UserResponse>>> getUsers(@RequestParam(defaultValue = "0", required = false) int pageNo,
-                                                                            @RequestParam(defaultValue = "20", required = false) int pageSize,
+                                                                            @RequestParam(defaultValue = "100", required = false) int pageSize,
                                                                             @RequestBody(required = false) SearchUserRequest searchUserRequest,
                                                                             @RequestParam(required = false, name = "sorts", defaultValue = "userId:asc")List<String> sorts,
                                                                             HttpServletRequest httpServletRequest){
@@ -116,6 +116,29 @@ public class UserController {
         ApiResponse apiResponse = ApiResponse.builder()
                 .code("user.export-to-excel.success")
                 .message(Translator.toLocale("user.export-to-excel.success")).build();
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @Operation(summary = "get profile", description = "get profile")
+    @GetMapping("/profile")
+    @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
+    public ResponseEntity<ApiResponse<UserResponse>> getProfile(HttpServletRequest httpServletRequest){
+        ApiResponse<UserResponse> apiResponse = ApiResponse.<UserResponse>builder()
+                .code("user.get-profile.success")
+                .message(Translator.toLocale("user.get-profile.success"))
+                .data(userService.getProfile()).build();
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @Operation(summary = "update profile", description = "update profile")
+    @PutMapping("/update-profile")
+    @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
+    public ResponseEntity<ApiResponse<UserResponse>> updateUser(@RequestBody @Valid UserUpdateRequest userUpdateRequest,
+                                                                HttpServletRequest httpServletRequest){
+        ApiResponse<UserResponse> apiResponse = ApiResponse.<UserResponse>builder()
+                .code("user.update-profile.success")
+                .message(Translator.toLocale("user.update-profile.success"))
+                .data(userService.updateProfile(userUpdateRequest)).build();
         return ResponseEntity.ok(apiResponse);
     }
 }

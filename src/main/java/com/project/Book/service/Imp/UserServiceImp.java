@@ -29,8 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -64,9 +62,6 @@ public class UserServiceImp implements UserService {
             throw new AccessDeniedException("access denied");
         }
         User user = userRepository.findByUserIdAndIsDeleteFalse(userId).orElseThrow(()->new AppException("error.user.notfound", HttpStatus.NOT_FOUND));
-        if(userRepository.existsByEmailAndIsDeleteFalse(userUpdateRequest.getEmail())&&!userUpdateRequest.getEmail().equals(user.getEmail())){
-            throw new AppException("error.email.used", HttpStatus.CONFLICT);
-        }
         userMapper.updateDtoToEntity(user, userUpdateRequest);
         return userMapper.entityToResponseDTO(userRepository.save(user));
     }
@@ -117,5 +112,25 @@ public class UserServiceImp implements UserService {
                 .writeHeaderLine(new String[]{"ID","Username","Password","Full name","Phone number","Email","Day of birth","Address"})
                 .writeDateLine(new String[]{"userId","username","password","fullName","phoneNumber","email","dob","address"},User.class)
                 .export(httpServletResponse);
+    }
+
+    @Override
+    public UserResponse getProfile() {
+        User user  = userRepository.findByUserIdAndIsDeleteFalse(Integer.parseInt(UtilClass.getUserId()))
+                .orElseThrow(()->new AppException("error.user.notfound", HttpStatus.NOT_FOUND));
+        return userMapper.entityToResponseDTO(user);
+    }
+
+    @Override
+    public UserResponse updateProfile(UserUpdateRequest userUpdateRequest) {
+        User user = userRepository.findByUserIdAndIsDeleteFalse(Integer.parseInt(UtilClass.getUserId()))
+                .orElseThrow(()->new AppException("error.user.notfound", HttpStatus.NOT_FOUND));
+        userMapper.updateDtoToEntity(user, userUpdateRequest);
+        return userMapper.entityToResponseDTO(userRepository.save(user));
+    }
+
+    @Override
+    public Integer getTotalUsers() {
+        return userRepository.getTotalUsers();
     }
 }

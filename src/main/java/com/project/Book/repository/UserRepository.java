@@ -48,4 +48,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     """, nativeQuery = true)
     void setDefaultRole(@Param("userId") int userId, @Param("roleCode") String roleCode);
 
+    @Query(value = """
+        select count(*) from user u where u.is_delete = false;
+    """, nativeQuery = true)
+    Integer getTotalUsers();
+
 }

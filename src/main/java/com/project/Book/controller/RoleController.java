@@ -82,7 +82,7 @@ public class RoleController {
     @GetMapping
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<PageResponse<RoleInListResponse>>> getRoles(@RequestParam(name ="pageNo", defaultValue = "0", required = false)int pageNo,
-                                                                                  @RequestParam(name = "pageSize", defaultValue = "10", required = false)int pageSize,
+                                                                                  @RequestParam(name = "pageSize", defaultValue = "100", required = false)int pageSize,
                                                                                   @RequestParam(name = "roleName", required = false)String roleName,
                                                                                   @RequestParam(name = "sorts", defaultValue = "roleId:asc", required = false) List<String> sorts,
                                                                                   HttpServletRequest httpServletRequest) {

@@ -30,6 +30,7 @@ public class SecurityConfig {
     String[] PUBLIC_ENDPOINT = {
             "/user/create",
             "/auth/token",
+            "/auth/login-admin",
             "/auth/introspect",
             "/auth/logout",
             "/auth/refresh",
@@ -82,7 +83,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5500"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
 

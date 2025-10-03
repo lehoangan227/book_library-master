@@ -15,7 +15,6 @@ public class CategoryRequest {
     @Pattern(regexp = "^CATE(_[A-Z]+)*$", message = "error.valid.category.code.format")
     String cateCode;
     @NotBlank(message = "error.valid.name.blank")
-    @Pattern(regexp = "^(?=.*[A-Za-z])[A-Za-z\\s]+$", message = "error.valid.category.name.format")
     String cateName;
     String cateDesc;
 }

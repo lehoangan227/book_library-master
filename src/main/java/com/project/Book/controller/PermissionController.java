@@ -84,7 +84,7 @@ public class PermissionController {
     @GetMapping
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<PageResponse<PermissionResponse>>> getPermissions(@RequestParam(name ="pageNo", defaultValue = "0", required = false)int pageNo,
-                                                                                        @RequestParam(name = "pageSize", defaultValue = "10", required = false)int pageSize,
+                                                                                        @RequestParam(name = "pageSize", defaultValue = "100", required = false)int pageSize,
                                                                                         @RequestParam(name = "perName", required = false)String perName,
                                                                                         @RequestParam(name = "sorts", defaultValue = "perId:asc", required = false)List<String> sorts,
                                                                                         HttpServletRequest httpServletRequest){

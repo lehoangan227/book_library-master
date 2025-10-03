@@ -15,6 +15,7 @@ public class BorrowResponse {
     Integer borrowId;
     String username;
     List<String> bookTitles;
+    LocalDate createDate;
     LocalDate borrowDate;
     LocalDate dueDate;
     LocalDate returnDate;

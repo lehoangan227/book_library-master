@@ -10,7 +10,7 @@ public enum Status {
     BORROWED("BORROWED"),
     RETURNED("RETURNED"),
     OVERDUE("OVERDUE"),
-
+    CANCELLED("CANCELLED");
     ;
     private final String status;
     Status(String status){

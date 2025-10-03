@@ -17,8 +17,6 @@ public class UserUpdateRequest {
     String fullName;
     @Pattern(regexp = "^0[0-9]{9}$", message = "error.valid.phone.format")
     String phoneNumber;
-    @Email(message = "error.valid.email.format")
-    String email;
     Date dob;
     String address;
 }

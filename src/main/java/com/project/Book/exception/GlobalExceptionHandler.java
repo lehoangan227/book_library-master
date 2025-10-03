@@ -37,12 +37,12 @@ public class GlobalExceptionHandler {
                 .build();
         return ResponseEntity.badRequest().body(apiResponse);
     }
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse> handleAccessDeniedException(AccessDeniedException exception){
-        ApiResponse apiResponse = ApiResponse.builder()
-                .code("error.user.unauthorized")
-                .message(Translator.toLocale("error.user.unauthorized"))
-                .build();
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiResponse);
-    }
+//    @ExceptionHandler(AccessDeniedException.class)
+//    public ResponseEntity<ApiResponse> handleAccessDeniedException(AccessDeniedException exception){
+//        ApiResponse apiResponse = ApiResponse.builder()
+//                .code("error.user.unauthorized")
+//                .message(Translator.toLocale("error.user.unauthorized"))
+//                .build();
+//        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiResponse);
+//    }
 }

@@ -13,7 +13,6 @@ import lombok.experimental.FieldDefaults;
 public class CategoryUpdateRequest {
     @Pattern(regexp = "^CATE(_[A-Z]+)*$", message = "error.valid.category.code.format")
     String cateCode;
-    @Pattern(regexp = "^(?=.*[A-Za-z])[A-Za-z\\s]+$", message = "error.valid.category.name.format")
     String cateName;
     String cateDesc;
 }

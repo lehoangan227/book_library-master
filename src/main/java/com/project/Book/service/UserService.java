@@ -18,4 +18,7 @@ public interface UserService {
     public void deleteUser(int userId);
     public PageResponse<UserResponse> getUsers(int pageNo, int pageSize, SearchUserRequest searchUserRequest, List<String> sorts);
     void exportToExcel(HttpServletResponse httpServletResponse) throws IOException;
+    public UserResponse getProfile();
+    public UserResponse updateProfile(UserUpdateRequest userUpdateRequest);
+    Integer getTotalUsers();
 }

@@ -19,8 +19,12 @@ import java.util.Properties;
 @FieldDefaults (level = AccessLevel.PRIVATE, makeFinal = true)
 public class CheckPermission {
     BeanConfig beanConfig;
-    public boolean fileRole(HttpServletRequest httpServletRequest){
-        String uri = httpServletRequest.getRequestURI();
+    HttpServletRequest httpServletRequest;
+    public boolean fileRole(HttpServletRequest request){
+        String uri = "";
+        if(httpServletRequest!=null && httpServletRequest.getRequestURI()!=null){
+            uri = httpServletRequest.getRequestURI();
+        }
         uri = uri.replaceAll("^/|/$", "").replaceAll("/", ".");
         uri = uri.replaceAll("\\.\\d+$", "");
         Properties properties = beanConfig.getPermissionFromFile();

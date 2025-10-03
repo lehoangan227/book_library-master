@@ -13,4 +13,5 @@ public class SearchBookRequest {
     String publisher;
     String language;
     String authors;
+    Integer cateId;
 }

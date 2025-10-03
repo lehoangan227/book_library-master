@@ -85,7 +85,7 @@ public class CategoryController {
     @Operation(summary = "get list categories", description = "Api list categories", security = @SecurityRequirement(name = ""))
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<CategoryResponse>>> getCategories(@RequestParam(name ="pageNo", defaultValue = "0", required = false)int pageNo,
-                                                                        @RequestParam(name = "pageSize", defaultValue = "10", required = false)int pageSize,
+                                                                        @RequestParam(name = "pageSize", defaultValue = "100", required = false)int pageSize,
                                                                         @RequestParam(name = "cateName", required = false)String cateName,
                                                                         @RequestParam(name = "sorts", defaultValue = "cateId:asc", required = false)List<String> sorts) {
         ApiResponse<PageResponse<CategoryResponse>> apiResponse = ApiResponse.<PageResponse<CategoryResponse>>builder()

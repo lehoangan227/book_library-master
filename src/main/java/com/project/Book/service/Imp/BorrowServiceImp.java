@@ -59,7 +59,7 @@ public class BorrowServiceImp implements BorrowService {
         List<String>titles = new ArrayList<>();
         for(Integer bookId : borrowCreateRequest.getBookIds()){
             if(bookRepository.checkQuantityAvailable(bookId)!=1){
-                throw new AppException("error.borrow-book-quantity.not-available", HttpStatus.CONFLICT);
+                throw new AppException("error.borrow-book-quantity.not-available " + bookId, HttpStatus.CONFLICT);
             }
             Book book = bookRepository.findByBookIdAndIsDeleteFalse(bookId)
                     .orElseThrow(()->new AppException("error.book.notfound", HttpStatus.NOT_FOUND));
@@ -71,12 +71,33 @@ public class BorrowServiceImp implements BorrowService {
         if(borrowRepository.hasOverDueBorrow(userId, Status.OVERDUE.getStatus())==1){
             throw new AppException("error.borrow.overdue",HttpStatus.CONFLICT);
         }
+        borrow.setCreateDate(LocalDate.now());
         borrow.setStatus(Status.CREATED.getStatus());
         borrow = borrowRepository.save(borrow);
         BorrowResponse borrowResponse = borrowMapper.entityToResponseDTO(borrow);
         borrowResponse.setUsername(user.getUsername());
         borrowResponse.setBookTitles(titles);
         return borrowResponse;
+    }
+
+    @Override
+    public Integer getTotalBorrowBook() {
+        return borrowRepository.getTotalBorrowByStatus(Status.BORROWED.getStatus());
+    }
+
+    @Override
+    public Integer getTotalReturnBook() {
+        return borrowRepository.getTotalBorrowByStatus(Status.RETURNED.getStatus());
+    }
+
+    @Override
+    public Integer getTotalCreateBook() {
+        return borrowRepository.getTotalBorrowByStatus(Status.CREATED.getStatus());
+    }
+
+    @Override
+    public Integer getTotalOverdueBook() {
+        return borrowRepository.getTotalBorrowByStatus(Status.OVERDUE.getStatus());
     }
 
     @Override
@@ -227,5 +248,11 @@ public class BorrowServiceImp implements BorrowService {
     @Scheduled(cron = "0 0 0 * * *")
     public void checkStatus() {
         borrowRepository.checkStatus(Status.OVERDUE.getStatus(),new Date());
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 0 * * *")
+    public void checkCreateDate(){
+        borrowRepository.checkCreateDate(Status.CANCELLED.getStatus(), Status.CREATED.getStatus(),LocalDate.now());
     }
 }

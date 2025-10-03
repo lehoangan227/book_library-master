@@ -76,4 +76,16 @@ public class    AuthenticationController {
                 .build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @Operation(summary = "login admin", description = "Api login admin to get token", security = @SecurityRequirement(name = ""))
+    @PostMapping("/login-admin")
+    public ResponseEntity<ApiResponse<AuthenticationResponse>> loginAdmin(@RequestBody AuthenticationRequest authenticationRequest) throws JOSEException, ParseException {
+
+        ApiResponse<AuthenticationResponse> apiResponse = ApiResponse.<AuthenticationResponse>builder()
+                .code("auth.login-admin.success")
+                .message(Translator.toLocale("auth.login-admin.success"))
+                .data(authenticationService.loginAdmin(authenticationRequest))
+                .build();
+        return ResponseEntity.ok(apiResponse);
+    }
 }

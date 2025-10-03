@@ -35,6 +35,8 @@ import org.springframework.util.CollectionUtils;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.StringJoiner;
@@ -73,7 +75,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
         SignedJWT refreshToken = generateToken(user,true);
         refreshTokenRepository.save(RefreshToken.builder()
                         .id(refreshToken.getJWTClaimsSet().getJWTID())
-                        .expireTime(refreshToken.getJWTClaimsSet().getExpirationTime())
+                        .expireTime(refreshToken.getJWTClaimsSet().getExpirationTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
                 .build());
         return AuthenticationResponse.builder()
                 .token(token.serialize())
@@ -167,6 +169,9 @@ public class AuthenticationServiceImp implements AuthenticationService {
     public AuthenticationResponse refreshToken(RefreshTokenRequest request) throws ParseException, JOSEException {
         SignedJWT signedJwt = vertifyToken(request.getToken(),true);
         String id = signedJwt.getJWTClaimsSet().getJWTID();
+        if(!refreshTokenRepository.existsById(id)||refreshTokenRepository.checkExpireTimeById(id, LocalDateTime.now())!=1){
+            throw new AppException("error.unauthenticated", HttpStatus.UNAUTHORIZED);
+        }
         refreshTokenRepository.deleteById(id);
         User user = userRepository.findByUsernameAndIsDeleteFalse(signedJwt.getJWTClaimsSet().getSubject())
                 .orElseThrow(()->new AppException("error.user.notfound", HttpStatus.NOT_FOUND));
@@ -174,7 +179,31 @@ public class AuthenticationServiceImp implements AuthenticationService {
         SignedJWT refreshToken = generateToken(user,true);
         refreshTokenRepository.save(RefreshToken.builder()
                 .id(refreshToken.getJWTClaimsSet().getJWTID())
-                .expireTime(refreshToken.getJWTClaimsSet().getExpirationTime())
+                .expireTime(refreshToken.getJWTClaimsSet().getExpirationTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
+                .build());
+        return AuthenticationResponse.builder()
+                .token(token.serialize())
+                .refreshToken(refreshToken.serialize())
+                .build();
+    }
+
+    @Override
+    public AuthenticationResponse loginAdmin(AuthenticationRequest authenticationRequest) throws ParseException, JOSEException {
+        User user = userRepository.findByUsernameAndIsDeleteFalse(authenticationRequest.getUsername())
+                .orElseThrow(()->new AppException("error.user.notfound", HttpStatus.NOT_FOUND));
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        boolean isAuthenticated = passwordEncoder.matches(authenticationRequest.getPassword(), user.getPassword());
+        SignedJWT token = generateToken(user, false);
+        SignedJWT signedJWT = SignedJWT.parse(token.serialize());
+        String role = signedJWT.getJWTClaimsSet().getClaim("scope").toString();
+        boolean isAdmin = role.equals(com.project.Book.enums.Role.GROUP_ADMIN.toString());
+        SignedJWT refreshToken = generateToken(user,true);
+        if(!isAuthenticated||!isAdmin){
+            throw new AppException("error.login.failed", HttpStatus.UNAUTHORIZED);
+        }
+        refreshTokenRepository.save(RefreshToken.builder()
+                .id(refreshToken.getJWTClaimsSet().getJWTID())
+                .expireTime(refreshToken.getJWTClaimsSet().getExpirationTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
                 .build());
         return AuthenticationResponse.builder()
                 .token(token.serialize())

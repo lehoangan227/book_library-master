@@ -2,6 +2,7 @@ package com.project.Book.repository;
 
 import com.project.Book.dto.request.SearchBorrowRequest;
 import com.project.Book.entity.Borrowing;
+import com.project.Book.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
 
@@ -26,6 +28,14 @@ public interface BorrowRepository extends JpaRepository<Borrowing, Integer> {
         update borrowing b set b.status = :status where b.due_date <= :today and b.is_delete = false
     """, nativeQuery = true)
     void checkStatus(@Param("status") String status, @Param("today") Date today);
+
+    @Modifying
+    @Query(value = """
+        update borrowing br join book_borrowing bb on br.borrow_id = bb.borrow_id join book b on bb.book_id = b.book_id 
+        set br.status = :newStatus, b.quantity_available = b.quantity_available + 1 where br.status = :oldStatus and
+        datediff(br.create_date, :today) > 2 and br.is_delete = false and b.is_delete = false
+    """, nativeQuery = true)
+    int checkCreateDate(@Param("newStatus") String newStatus, @Param("oldStatus") String oldStatus, @Param("today") LocalDate today);
 
     boolean existsByBorrowIdAndIsDeleteFalse(int borrowId);
 
@@ -57,4 +67,11 @@ public interface BorrowRepository extends JpaRepository<Borrowing, Integer> {
         select b from Borrowing b where b.user.userId = :userId and b.borrowId = :borrowId and b.isDelete = false
     """)
     Optional<Borrowing> findByBorrowIdAndUserIdAndIsDeleteFalse(@Param("borrowId") int borrowId, @Param("userId")int userId);
+
+    @Query(value = """
+        select count(*) from borrowing br where br.status = :status and br.is_delete = false
+    """, nativeQuery = true)
+    Integer getTotalBorrowByStatus(@Param("status") String status);
+
+
 }

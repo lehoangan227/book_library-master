@@ -122,4 +122,9 @@ public class BookServiceImp implements BookService {
                 .items(bookResponses)
                 .build();
     }
+
+    @Override
+    public Integer getTotalBooks() {
+        return bookRepository.getTotalBooks();
+    }
 }

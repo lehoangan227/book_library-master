@@ -18,5 +18,5 @@ public class RefreshToken {
     @Id
     String id;
     @Column(name = "expire_time")
-    Date expireTime;
+    LocalDateTime expireTime;
 }

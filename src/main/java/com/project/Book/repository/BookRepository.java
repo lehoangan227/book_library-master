@@ -26,11 +26,12 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     void softDeleteByBookId(@Param("bookId") int bookId);
 
     @Query("""
-        SELECT b FROM Book b
+        SELECT distinct b FROM Book b JOIN b.categories c
         WHERE (:#{#request.bookTitle} IS NULL OR b.bookTitle LIKE CONCAT('%', :#{#request.bookTitle}, '%'))
           AND (:#{#request.publisher} IS NULL OR b.publisher LIKE CONCAT('%', :#{#request.publisher}, '%'))
           AND (:#{#request.language} IS NULL OR b.language LIKE CONCAT('%', :#{#request.language}, '%'))
           AND (:#{#request.authors} IS NULL OR b.authors LIKE CONCAT('%', :#{#request.authors}, '%'))
+          AND (:#{#request.cateId} IS NULL OR c.cateId = :#{#request.cateId})
           AND b.isDelete = false
     """)
     Page<Book> searchBooks(Pageable pageable, @Param("request") SearchBookRequest searchBookRequest);
@@ -51,4 +52,9 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
         update book b set quantity_available = quantity_available + 1 where book_id = :bookId
     """, nativeQuery = true)
     void updateQuantityAfterReturning(@Param("bookId")int bookId);
+
+    @Query(value = """
+        select count(*) from book b where b.is_delete = false 
+    """, nativeQuery = true)
+    Integer getTotalBooks();
 }

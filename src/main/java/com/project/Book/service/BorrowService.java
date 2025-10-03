@@ -16,4 +16,8 @@ public interface BorrowService {
     BorrowResponse getBorrow(int borrowId);
     void deleteBorrow(int borrowId);
     PageResponse<BorrowResponse> getBorrows(int pageNo, int pageSize, List<String> sorts, SearchBorrowRequest searchBorrowRequest);
+    Integer getTotalBorrowBook();
+    Integer getTotalReturnBook();
+    Integer getTotalCreateBook();
+    Integer getTotalOverdueBook();
 }

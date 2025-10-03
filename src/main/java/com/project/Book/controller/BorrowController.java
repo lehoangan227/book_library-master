@@ -29,6 +29,7 @@ public class BorrowController {
     BorrowService borrowService;
 
     @Operation(summary = "create borrow", description = "Api create borrow")
+    @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<BorrowResponse>> createBorrow(@RequestBody BorrowCreateRequest borrowCreateRequest){
         ApiResponse<BorrowResponse> apiResponse = ApiResponse.<BorrowResponse>builder()
@@ -92,7 +93,7 @@ public class BorrowController {
     @GetMapping
     @PreAuthorize("@checkPermission.fileRole(#httpServletRequest)")
     public ResponseEntity<ApiResponse<PageResponse<BorrowResponse>>> getBorrows(@RequestParam(name = "pageNo",defaultValue = "0",required = false)int pageNo,
-                                                                                @RequestParam(name = "pageSize",defaultValue = "2",required = false)int pageSize,
+                                                                                @RequestParam(name = "pageSize",defaultValue = "100",required = false)int pageSize,
                                                                                 @RequestParam(name = "sorts",required = false, defaultValue = "borrowId:asc")List<String> sorts,
                                                                                 @RequestBody(required = false) SearchBorrowRequest searchBorrowRequest,
                                                                                 HttpServletRequest httpServletRequest){
